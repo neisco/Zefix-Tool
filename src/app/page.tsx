@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, Download, Search, CheckCircle2, AlertCircle, HelpCircle, Loader2, Play } from 'lucide-react';
+import { Upload, Download, Search, CheckCircle2, AlertCircle, HelpCircle, Loader2, Play, Sparkles } from 'lucide-react';
 import { InputRow, EnrichedRow, ZefixMatch, RowStatus } from '@/types';
 import { parseExcelFile, exportToExcel } from '@/lib/excel';
 import { fetchZefixData, zefixQueue } from '@/lib/zefix';
@@ -135,43 +135,49 @@ export default function Home() {
 
   const getStatusIcon = (status: RowStatus) => {
     switch (status) {
-      case 'Gefunden': return <CheckCircle2 className="w-5 h-5 text-green-500" />;
-      case 'Mehrere Treffer': return <HelpCircle className="w-5 h-5 text-yellow-500" />;
-      case 'Nicht gefunden': return <AlertCircle className="w-5 h-5 text-gray-500" />;
-      case 'Fehler': return <AlertCircle className="w-5 h-5 text-red-500" />;
-      case 'Suche läuft': return <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />;
-      default: return <Search className="w-5 h-5 text-gray-300" />;
+      case 'Gefunden': return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
+      case 'Mehrere Treffer': return <HelpCircle className="w-5 h-5 text-amber-500" />;
+      case 'Nicht gefunden': return <AlertCircle className="w-5 h-5 text-slate-400" />;
+      case 'Fehler': return <AlertCircle className="w-5 h-5 text-rose-500" />;
+      case 'Suche läuft': return <Loader2 className="w-5 h-5 text-slate-600 animate-spin" />;
+      default: return <Search className="w-5 h-5 text-slate-300" />;
     }
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8 text-gray-800">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="relative min-h-screen text-slate-800">
+      <main className="relative z-10 p-6 sm:p-12 max-w-7xl mx-auto space-y-10">
         
-        <header className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <div>
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-              Zefix Excel Enrichment Tool
+        <header className="glass-panel p-8 sm:p-10 rounded-[2rem] flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-center md:text-left">
+            <div className="inline-flex items-center justify-center gap-2 px-3 py-1 mb-4 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-sm font-medium shadow-sm">
+              <Sparkles className="w-4 h-4" />
+              <span>Smarte Datenanreicherung</span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-3">
+              Zefix Tool
             </h1>
-            <p className="text-gray-500 mt-2">Reichern Sie Ihre Excel-Daten automatisch mit offiziellen Schweizer Firmeninformationen an.</p>
+            <p className="text-slate-500 text-lg max-w-xl">
+              Laden Sie Ihre Excel-Listen hoch und vervollständigen Sie diese automatisch mit offiziellen Daten des Schweizer Handelsregisters.
+            </p>
           </div>
         </header>
 
         {error && (
-          <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 flex items-center gap-3">
-            <AlertCircle className="w-5 h-5" />
-            {error}
+          <div className="bg-rose-50 text-rose-700 p-5 rounded-2xl border border-rose-100 flex items-center gap-4 shadow-sm">
+            <AlertCircle className="w-6 h-6 flex-shrink-0" />
+            <p className="font-medium">{error}</p>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="p-4 bg-blue-50 text-blue-600 rounded-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          <div className="col-span-1 glass-panel glass-panel-hover p-8 rounded-[2rem] flex flex-col items-center text-center space-y-6 group">
+            <div className="p-5 bg-slate-50 text-slate-600 rounded-2xl border border-slate-100 group-hover:scale-105 transition-transform duration-300 shadow-sm">
               <Upload className="w-8 h-8" />
             </div>
-            <div>
-              <h3 className="font-semibold text-lg">1. Excel hochladen</h3>
-              <p className="text-sm text-gray-500 mb-4">Pflichtspalten: Name, Ort</p>
+            <div className="w-full">
+              <h3 className="font-bold text-xl text-slate-800 mb-2">1. Datei hochladen</h3>
+              <p className="text-sm text-slate-500 mb-6 leading-relaxed">Wählen Sie Ihre `.xlsx` Datei aus. Erwartete Spalten: <strong className="text-slate-700 font-medium">Name, Ort</strong>.</p>
               <input 
                 type="file" 
                 accept=".xlsx, .xls" 
@@ -182,107 +188,110 @@ export default function Home() {
               <button 
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-sm disabled:opacity-50"
+                className="btn-secondary w-full"
               >
-                {isUploading ? 'Wird geladen...' : 'Datei auswählen'}
+                {isUploading ? 'Wird geladen...' : 'Excel auswählen'}
               </button>
             </div>
           </div>
 
-          <div className="col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="p-4 bg-indigo-50 text-indigo-600 rounded-full">
+          <div className="col-span-1 glass-panel glass-panel-hover p-8 rounded-[2rem] flex flex-col items-center text-center space-y-6 group">
+            <div className="p-5 bg-slate-50 text-slate-600 rounded-2xl border border-slate-100 group-hover:scale-105 transition-transform duration-300 shadow-sm">
               <Search className="w-8 h-8" />
             </div>
-            <div>
-              <h3 className="font-semibold text-lg">2. Zefix Suche</h3>
-              <p className="text-sm text-gray-500 mb-4">Daten mit dem Handelsregister abgleichen</p>
+            <div className="w-full">
+              <h3 className="font-bold text-xl text-slate-800 mb-2">2. Zefix Suche</h3>
+              <p className="text-sm text-slate-500 mb-6 leading-relaxed">Abgleich der Daten mit dem offiziellen Schweizer Firmenregister.</p>
               <button 
                 onClick={startZefixSearch}
                 disabled={rows.length === 0 || isProcessing}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2 mx-auto"
+                className="btn-primary w-full flex items-center justify-center gap-2"
               >
-                {isProcessing ? <><Loader2 className="w-4 h-4 animate-spin" /> Suche läuft</> : <><Play className="w-4 h-4" /> Suche starten</>}
+                {isProcessing ? <><Loader2 className="w-5 h-5 animate-spin" /> Suche läuft</> : <><Play className="w-5 h-5 fill-current" /> Suche starten</>}
               </button>
             </div>
           </div>
 
-          <div className="col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="p-4 bg-green-50 text-green-600 rounded-full">
+          <div className="col-span-1 glass-panel glass-panel-hover p-8 rounded-[2rem] flex flex-col items-center text-center space-y-6 group">
+            <div className="p-5 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100 group-hover:scale-105 transition-transform duration-300 shadow-sm">
               <Download className="w-8 h-8" />
             </div>
-            <div>
-              <h3 className="font-semibold text-lg">3. Exportieren</h3>
-              <p className="text-sm text-gray-500 mb-4">Angereicherte Datei herunterladen</p>
+            <div className="w-full">
+              <h3 className="font-bold text-xl text-slate-800 mb-2">3. Exportieren</h3>
+              <p className="text-sm text-slate-500 mb-6 leading-relaxed">Laden Sie die gefundenen Treffer als neues Dokument herunter.</p>
               <button 
                 onClick={handleExport}
                 disabled={rows.filter(r => r.selectedForExport).length === 0}
-                className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors shadow-sm disabled:opacity-50"
+                className="btn-success w-full"
               >
-                Auswahl exportieren ({rows.filter(r => r.selectedForExport).length})
+                Ergebnisse exportieren ({rows.filter(r => r.selectedForExport).length})
               </button>
             </div>
           </div>
         </div>
 
         {rows.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h2 className="font-semibold text-lg">Daten ({rows.length} Einträge)</h2>
-              <div className="flex gap-4 text-sm">
-                <span className="flex items-center gap-1 text-green-600"><CheckCircle2 className="w-4 h-4"/> Gefunden ({rows.filter(r => r.status === 'Gefunden').length})</span>
-                <span className="flex items-center gap-1 text-yellow-600"><HelpCircle className="w-4 h-4"/> Mehrere ({rows.filter(r => r.status === 'Mehrere Treffer').length})</span>
+          <div className="glass-panel rounded-[2rem] overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/50">
+              <h2 className="font-bold text-xl text-slate-800">Datenübersicht ({rows.length})</h2>
+              <div className="flex gap-6 text-sm font-medium">
+                <span className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full"><CheckCircle2 className="w-4 h-4 text-emerald-500"/> Gefunden ({rows.filter(r => r.status === 'Gefunden').length})</span>
+                <span className="flex items-center gap-2 text-amber-700 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full"><HelpCircle className="w-4 h-4 text-amber-500"/> Mehrere ({rows.filter(r => r.status === 'Mehrere Treffer').length})</span>
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 text-gray-500 text-sm">
-                    <th className="p-4 font-medium border-b border-gray-100 w-12 text-center">Export</th>
-                    <th className="p-4 font-medium border-b border-gray-100 w-16 text-center">Status</th>
-                    <th className="p-4 font-medium border-b border-gray-100">Original Name & Ort</th>
-                    <th className="p-4 font-medium border-b border-gray-100">Zefix Match</th>
+                  <tr className="bg-slate-50/80 text-slate-500 text-sm">
+                    <th className="p-5 font-semibold border-b border-slate-100 w-16 text-center">Export</th>
+                    <th className="p-5 font-semibold border-b border-slate-100 w-20 text-center">Status</th>
+                    <th className="p-5 font-semibold border-b border-slate-100 w-1/3">Original (Name & Ort)</th>
+                    <th className="p-5 font-semibold border-b border-slate-100">Zefix Match</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-slate-100">
                   {rows.map((row) => (
-                    <tr key={row.input.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="p-4 text-center align-top">
+                    <tr key={row.input.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="p-5 text-center align-top">
                         <input 
                           type="checkbox" 
                           checked={row.selectedForExport} 
                           onChange={() => toggleExportSelection(row.input.id)}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mt-1"
+                          className="w-5 h-5 text-emerald-500 rounded border-slate-300 bg-white focus:ring-emerald-500 mt-1 cursor-pointer transition-all"
                         />
                       </td>
-                      <td className="p-4 text-center align-top">
+                      <td className="p-5 text-center align-top">
                         <div className="flex justify-center mt-0.5" title={row.status}>
                           {getStatusIcon(row.status)}
                         </div>
                       </td>
-                      <td className="p-4 align-top">
-                        <div className="font-medium text-gray-900">{row.input.Name}</div>
-                        <div className="text-sm text-gray-500">{row.input.Ort}</div>
+                      <td className="p-5 align-top">
+                        <div className="font-semibold text-slate-800 text-lg mb-1">{row.input.Name}</div>
+                        <div className="text-sm text-slate-500 flex items-center gap-2">
+                          <span className="bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-xs text-slate-600">{row.input.Ort}</span>
+                        </div>
                       </td>
-                      <td className="p-4 align-top">
+                      <td className="p-5 align-top">
                         {row.status === 'Gefunden' && row.selectedMatch && (
-                          <div className="bg-green-50 p-3 rounded-xl border border-green-100">
-                            <div className="font-medium text-green-900 flex justify-between">
-                              {row.selectedMatch.name}
-                              <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">{row.selectedMatch.confidenceScore}%</span>
+                          <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                            <div className="font-semibold text-emerald-800 flex justify-between items-start gap-4">
+                              <span>{row.selectedMatch.name}</span>
+                              <span className="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full whitespace-nowrap border border-emerald-200">
+                                {row.selectedMatch.confidenceScore}% Match
+                              </span>
                             </div>
-                            <div className="text-sm text-green-700 mt-1">{row.selectedMatch.address}, {row.selectedMatch.municipality}</div>
-                            <div className="text-xs text-green-600 mt-1 flex gap-2">
-                              <span>UID: {row.selectedMatch.uid}</span>
-                              <span>•</span>
-                              <span>{row.selectedMatch.status}</span>
+                            <div className="text-sm text-emerald-700 mt-2">{row.selectedMatch.address}, {row.selectedMatch.municipality}</div>
+                            <div className="text-xs text-emerald-600 mt-3 flex items-center gap-3">
+                              <span className="bg-white border border-emerald-100 px-2 py-1 rounded shadow-sm">UID: {row.selectedMatch.uid}</span>
+                              <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500"></div>{row.selectedMatch.status}</span>
                             </div>
                           </div>
                         )}
 
                         {row.status === 'Mehrere Treffer' && row.possibleMatches.length > 0 && (
-                          <div className="space-y-2">
+                          <div className="space-y-3">
                             <select 
-                              className="w-full text-sm p-2 border border-yellow-300 rounded-lg bg-yellow-50 text-yellow-900 focus:ring-2 focus:ring-yellow-500 outline-none"
+                              className="w-full text-sm p-3 border border-amber-200 rounded-xl bg-white text-slate-800 focus:ring-2 focus:ring-amber-500 outline-none cursor-pointer shadow-sm"
                               value={row.selectedMatch?.uid || ''}
                               onChange={(e) => selectMatch(row.input.id, e.target.value)}
                             >
@@ -294,7 +303,7 @@ export default function Home() {
                               ))}
                             </select>
                             {row.selectedMatch && (
-                               <div className="text-xs text-gray-500 px-1">
+                               <div className="text-xs text-slate-500 px-2">
                                  Ausgewählt: UID {row.selectedMatch.uid}
                                </div>
                             )}
@@ -302,19 +311,20 @@ export default function Home() {
                         )}
 
                         {row.status === 'Nicht gefunden' && (
-                          <div className="text-sm text-gray-500 italic py-1">
+                          <div className="text-sm text-slate-500 italic py-2 px-3 bg-slate-50 rounded-lg inline-block border border-slate-100">
                             Keine passende Firma auf Zefix gefunden.
                           </div>
                         )}
 
                         {row.status === 'Fehler' && (
-                          <div className="text-sm text-red-600 py-1">
+                          <div className="text-sm text-rose-600 py-2 px-3 bg-rose-50 rounded-lg inline-block border border-rose-100">
                             {row.errorMessage || 'Ein Fehler ist aufgetreten.'}
                           </div>
                         )}
                         
                         {row.status === 'Nicht gesucht' && (
-                          <div className="text-sm text-gray-400 py-1">
+                          <div className="text-sm text-slate-400 py-2 flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
                             Wartet auf Suchstart...
                           </div>
                         )}
@@ -326,7 +336,7 @@ export default function Home() {
             </div>
           </div>
         )}
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
